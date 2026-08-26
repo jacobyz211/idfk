@@ -1,0 +1,17 @@
+{
+  "name": "oxylabs-relay",
+  "version": "1.0.0",
+  "description": "Tiny always-on relay that forwards HTTP requests through Oxylabs ISP proxies using a normal Node HTTP client, so Cloudflare Workers never has to open raw sockets.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "express": "^4.19.2",
+    "https-proxy-agent": "^7.0.4"
+  }
+}
