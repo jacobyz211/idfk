@@ -13,9 +13,11 @@ let rrIndex = 0;
 // Simple shared-secret auth so random people can't use your relay/proxy budget.
 const RELAY_SECRET = process.env.RELAY_SECRET || null;
 
-function nextProxyAgent() {
-  const port = OXY_PORTS[rrIndex % OXY_PORTS.length];
-  rrIndex++;
+function nextProxyAgent(credId) {
+  let hash = 0;
+  const key = String(credId || 'default');
+  for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  const port = OXY_PORTS[hash % OXY_PORTS.length];
   const proxyUrl = `http://${OXY_USERNAME}:${OXY_PASSWORD}@isp.oxylabs.io:${port}`;
   return { agent: new HttpsProxyAgent(proxyUrl), port };
 }
@@ -38,7 +40,7 @@ app.get('/proxy', async (req, res) => {
     try { extraHeaders = JSON.parse(req.query.headers); } catch (e) { /* ignore malformed headers param */ }
   }
 
-  const { agent, port } = nextProxyAgent();
+  const { agent, port } = nextProxyAgent(req.query.cred);
 
   try {
     const upstream = await axios.get(targetUrl, {
